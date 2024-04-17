@@ -15,11 +15,11 @@ public with sharing class AccountTriggerHandler {
                 acc.Type = 'Prospect';
             }
             // When an account is inserted copy the shipping address to the billing address.
-            acc.BillingStreet = acc.ShippingStreet ?? '';
-            acc.BillingCity = acc.ShippingCity ?? '';
-            acc.BillingState = acc.ShippingState ?? '';
-            acc.BillingPostalCode = acc.ShippingPostalCode ?? '';
-            acc.BillingCountry = acc.ShippingCountry ?? '';
+            acc.BillingStreet = acc.ShippingStreet;
+            acc.BillingCity = acc.ShippingCity;
+            acc.BillingState = acc.ShippingState;
+            acc.BillingPostalCode = acc.ShippingPostalCode;
+            acc.BillingCountry = acc.ShippingCountry;
             // When an account is inserted set the rating to 'Hot' if the Phone, Website, and Fax ALL have a value.
             if (acc.Phone != null && acc.Website != null && acc.Fax != null) {
                 acc.Rating = 'Hot';
