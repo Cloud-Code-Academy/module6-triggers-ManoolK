@@ -10,7 +10,7 @@ public with sharing class OpportunityTriggerHandler {
     **/
     public static void beforeUpdate(Map<Id, Opportunity> opportunitiesById) {
         // Get Accounts by Id with a Contact which Title = 'CEO'
-        Map<Id, Account> AccountsById = new Map<Id, Account>([
+        Map<Id, Account> accountsById = new Map<Id, Account>([
             SELECT Id, (SELECT Id FROM Contacts WHERE Title = 'CEO' LIMIT 1)
             FROM Account 
             WHERE Id IN (SELECT AccountId FROM Opportunity WHERE ID IN :opportunitiesById.keySet())
@@ -18,11 +18,11 @@ public with sharing class OpportunityTriggerHandler {
         for (Opportunity oppty : opportunitiesById.values()) {
             // When an opportunity is updated validate that the amount is greater than 5000.
             // Error Message: 'Opportunity amount must be greater than 5000'
-            if (oppty.Amount <= 5000) {
+            if (oppty.Amount < 5000) {
                 oppty.addError('Opportunity amount must be greater than 5000');
             }
             // When an opportunity is updated set the primary contact on the opportunity to the contact on the same account with the title of 'CEO'.
-            Account acc = AccountsById.get(oppty.AccountId);
+            Account acc = accountsById.get(oppty.AccountId);
             if (acc != null) {
                 oppty.Primary_Contact__c = acc?.Contacts[0].Id;
             }
@@ -42,6 +42,7 @@ public with sharing class OpportunityTriggerHandler {
             WHERE Id IN :opportunitiesById.keySet()
                 AND isClosed = true AND isWon = true
                 AND Account.Industry = 'Banking'
+            WITH SECURITY_ENFORCED
         ];
         for (Opportunity oppty : oppsNotForDel) {
             opportunitiesById.get(oppty.Id).addError('Cannot delete closed opportunity for a banking account that is won');
